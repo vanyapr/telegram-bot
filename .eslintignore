@@ -1,5 +1,4 @@
 /node_modules
 /build
-/.parcel-cache
 **/*.min.js
 *.test.*
