@@ -9,10 +9,10 @@ if (APIKEY === undefined) {
 }
 
 // Клавиатура
-const keyboard = Markup.keyboard([
-  Markup.button.pollRequest('Create poll', 'regular'),
-  Markup.button.pollRequest('Create quiz', 'quiz'),
-]);
+// const keyboard = Markup.keyboard([
+//   Markup.button.pollRequest('Create poll', 'regular'),
+//   Markup.button.pollRequest('Create quiz', 'quiz'),
+// ]);
 
 const bot = new Telegraf(APIKEY as string);
 
