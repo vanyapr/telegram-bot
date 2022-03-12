@@ -1,6 +1,6 @@
 import { Telegraf } from 'telegraf';
 import dotEnv from 'dotenv'; // .env file
-import { apiKey } from './settings';
+import { apiKey } from 'settings';
 
 dotEnv.config();
 
