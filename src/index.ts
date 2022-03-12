@@ -1,4 +1,4 @@
-import { Telegraf, Markup } from 'telegraf';
+import { Composer, Markup, Scenes, session, Telegraf } from 'telegraf';
 import dotenv from 'dotenv'; // .env file
 dotenv.config();
 
@@ -8,112 +8,52 @@ if (APIKEY === undefined) {
   throw new Error('BOT_TOKEN must be provided!');
 }
 
-// Клавиатура
-// const keyboard = Markup.keyboard([
-//   Markup.button.pollRequest('Create poll', 'regular'),
-//   Markup.button.pollRequest('Create quiz', 'quiz'),
-// ]);
-
 const bot = new Telegraf(APIKEY as string);
 
-bot.use(Telegraf.log());
+const stepHandler = new Composer<Scenes.WizardContext>();
+stepHandler.action('next', async (ctx) => {
+  await ctx.reply('Step 2. Via inline button');
+  return ctx.wizard.next();
+});
+stepHandler.command('next', async (ctx) => {
+  await ctx.reply('Step 2. Via command');
+  return ctx.wizard.next();
+});
+stepHandler.use((ctx) => ctx.replyWithMarkdown('Press `Next` button or type /next'));
 
-bot.command('onetime', (ctx) => ctx.reply('One time keyboard', Markup
-  .keyboard(['/simple', '/inline', '/pyramid'])
-  .oneTime()
-  .resize()));
-
-bot.command('custom', async (ctx) => await ctx.reply('Custom buttons keyboard', Markup
-  .keyboard([
-    ['🔍 Search', '😎 Popular'], // Row1 with 2 buttons
-    ['☸ Setting', '📞 Feedback'], // Row2 with 2 buttons
-    ['📢 Ads', '⭐️ Rate us', '👥 Share'], // Row3 with 3 buttons
-  ])
-  .oneTime()
-  .resize()));
-
-bot.hears('🔍 Search', (ctx) => ctx.reply('Yay!'));
-bot.hears('📢 Ads', (ctx) => ctx.reply('Free hugs. Call now!'));
-
-bot.command('special', (ctx) => ctx.reply(
-  'Special buttons keyboard',
-  Markup.keyboard([
-    Markup.button.contactRequest('Send contact'),
-    Markup.button.locationRequest('Send location'),
-  ]).resize(),
-));
-
-bot.command('pyramid', (ctx) => ctx.reply(
-  'Keyboard wrap',
-  Markup.keyboard(['one', 'two', 'three', 'four', 'five', 'six'], {
-    wrap: (btn, index, currentRow) => currentRow.length >= (index + 1) / 2,
-  }),
-));
-
-bot.command('simple', (ctx) => ctx.replyWithHTML(
-  '<b>Coke</b> or <i>Pepsi?</i>',
-  Markup.keyboard(['Coke', 'Pepsi']),
-));
-
-bot.command('inline', (ctx) => ctx.reply('<b>Coke</b> or <i>Pepsi?</i>', {
-  parse_mode: 'HTML',
-  ...Markup.inlineKeyboard([
-    Markup.button.callback('Coke', 'Coke'),
-    Markup.button.callback('Pepsi', 'Pepsi'),
-  ]),
-}));
-
-bot.command('random', (ctx) => ctx.reply(
-  'random example',
-  Markup.inlineKeyboard([
-    Markup.button.callback('Coke', 'Coke'),
-    Markup.button.callback('Dr Pepper', 'Dr Pepper', Math.random() > 0.5),
-    Markup.button.callback('Pepsi', 'Pepsi'),
-  ]),
-));
-
-bot.command('caption', (ctx) => ctx.replyWithPhoto(
-  { url: 'https://picsum.photos/200/300/?random' },
-  {
-    caption: 'Caption',
-    parse_mode: 'Markdown',
-    ...Markup.inlineKeyboard([
-      Markup.button.callback('Plain', 'plain'),
-      Markup.button.callback('Italic', 'italic'),
-    ]),
+const superWizard = new Scenes.WizardScene(
+  'super-wizard',
+  async (ctx) => {
+    await ctx.reply(
+      'Step 1',
+      Markup.inlineKeyboard([
+        Markup.button.url('❤️', 'http://telegraf.js.org'),
+        Markup.button.callback('➡️ Next', 'next'),
+      ]),
+    );
+    return ctx.wizard.next();
   },
-));
+  stepHandler,
+  async (ctx) => {
+    await ctx.reply('Step 3');
+    return ctx.wizard.next();
+  },
+  async (ctx) => {
+    await ctx.reply('Step 4');
+    return ctx.wizard.next();
+  },
+  async (ctx) => {
+    await ctx.reply('Done');
+    return await ctx.scene.leave();
+  },
+);
 
-bot.hears(/\/wrap (\d+)/, (ctx) => ctx.reply(
-  'Keyboard wrap',
-  Markup.keyboard(['one', 'two', 'three', 'four', 'five', 'six'], {
-    columns: parseInt(ctx.match[1]),
-  }),
-));
-
-bot.action('Dr Pepper', (ctx, next) => ctx.reply('👍').then(() => next()));
-
-bot.action('plain', async (ctx) => {
-  await ctx.answerCbQuery();
-  await ctx.editMessageCaption('Caption', Markup.inlineKeyboard([
-    Markup.button.callback('Plain', 'plain'),
-    Markup.button.callback('Italic', 'italic'),
-  ]));
+const bot = new Telegraf<Scenes.WizardContext>(token);
+const stage = new Scenes.Stage<Scenes.WizardContext>([superWizard], {
+  default: 'super-wizard',
 });
-
-bot.action('italic', async (ctx) => {
-  await ctx.answerCbQuery();
-  await ctx.editMessageCaption('_Caption_', {
-    parse_mode: 'Markdown',
-    ...Markup.inlineKeyboard([
-      Markup.button.callback('Plain', 'plain'),
-      Markup.button.callback('* Italic *', 'italic'),
-    ]),
-  });
-});
-
-bot.action(/.+/, (ctx) => ctx.answerCbQuery(`Oh, ${ctx.match[0]}! Great choice`));
-
+bot.use(session());
+bot.use(stage.middleware());
 bot.launch();
 
 // Enable graceful stop
