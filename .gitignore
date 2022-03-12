@@ -319,4 +319,4 @@ package-lock.json
 # Остальные файлы остающиеся в процессе работы
 /dist
 /apikey.txt
-/settings.ts
+/src/settings.ts

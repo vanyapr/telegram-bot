@@ -2,10 +2,10 @@
   "name": "telegram-bot",
   "version": "1.0.0",
   "description": "telegram bot for personal use",
-  "main": "index.ts",
+  "main": "src/index.ts",
   "scripts": {
     "build": "tsc",
-    "start": "node .",
+    "start": "ts-node .",
     "server:watch": "ts-node-dev --respawn --transpile-only src/index.ts"
   },
   "prestart": "npm run build",
@@ -21,12 +21,13 @@
   "homepage": "https://github.com/vanyapr/telegram-bot#readme",
   "dependencies": {
     "dotenv": "^16.0.0",
-    "telegraf": "^4.7.0"
+    "telegraf": "^4.7.0",
+    "ts-node": "^10.7.0"
   },
   "devDependencies": {
     "@types/node": "^17.0.21",
-    "@typescript-eslint/parser": "^5.14.0",
     "@typescript-eslint/eslint-plugin": "^5.11.0",
+    "@typescript-eslint/parser": "^5.14.0",
     "eslint": "^8.11.0",
     "eslint-config-airbnb": "^19.0.4",
     "eslint-config-airbnb-base": "^15.0.0",

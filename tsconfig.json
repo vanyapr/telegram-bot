@@ -4,9 +4,10 @@
       "dom",
       "es2017"
     ],
-    "module": "esnext",
+    "module": "commonjs",
     "moduleResolution": "node",
-    "target": "es5",
+    "target": "es6",
+    "rootDir": "./src",
     "jsx": "react",
     "importHelpers": true,
     "noUnusedLocals": true,
@@ -20,9 +21,14 @@
     "baseUrl": ".",
     "outDir": "./dist",
     "paths": {
-      "*": ["./src/*"]
+      "*": [
+        "./src/*"
+      ]
     },
-    "typeRoots": ["typings/**/*.d.ts", "node_modules/@types"],
+    "typeRoots": [
+      "typings/**/*.d.ts",
+      "node_modules/@types"
+    ]
   },
   "include": [
     "src",
