@@ -7,7 +7,7 @@ const port = process.env.PORT;
 const apiKey = process.env.APIKEY;
 console.log(apiKey);
 
-const bot = new Telegraf(apiKey);
+const bot = new Telegraf(apiKey as string);
 
 bot.start((ctx) => ctx.reply('Welcome!'));
 bot.help((ctx) => ctx.reply('Send me a sticker'));
