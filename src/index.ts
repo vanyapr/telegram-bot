@@ -8,8 +8,6 @@ if (APIKEY === undefined) {
   throw new Error('BOT_TOKEN must be provided!');
 }
 
-const bot = new Telegraf(APIKEY as string);
-
 const stepHandler = new Composer<Scenes.WizardContext>();
 stepHandler.action('next', async (ctx) => {
   await ctx.reply('Step 2. Via inline button');
@@ -48,7 +46,7 @@ const superWizard = new Scenes.WizardScene(
   },
 );
 
-const bot = new Telegraf<Scenes.WizardContext>(token);
+const bot = new Telegraf<Scenes.WizardContext>(APIKEY);
 const stage = new Scenes.Stage<Scenes.WizardContext>([superWizard], {
   default: 'super-wizard',
 });
