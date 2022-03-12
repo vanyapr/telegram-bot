@@ -1,16 +1,15 @@
 import { Telegraf } from 'telegraf';
 import dotEnv from 'dotenv'; // .env file
-// import apiKey from './settings';
-
 dotEnv.config();
 
 // @ts-ignore
 const port = process.env.PORT;
+const apiKey = process.env.APIKEY;
 
-const bot = new Telegraf('5269770541:AAGSg63rWPvkPpFFuwE6VLt8nJnb0YpBIpU');
+const bot = new Telegraf(apiKey);
 
 bot.start((ctx) => ctx.reply('Welcome!'));
 bot.help((ctx) => ctx.reply('Send me a sticker'));
-bot.on('sticker', (ctx) => ctx.reply(''));
+bot.on('sticker', (ctx) => ctx.reply('hey'));
 bot.hears('hi', (ctx) => ctx.reply('Hey there'));
 bot.launch();
